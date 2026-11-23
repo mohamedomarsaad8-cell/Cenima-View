@@ -1,0 +1,258 @@
+﻿@using CinemaSystem.ViewModels.Identity
+@model ApplicationUserDetailsVM
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "My profile";
+
+    var userName = User.Identity?.Name ?? "";
+    var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "";
+    var initial = string.IsNullOrEmpty(userName) ? "?" : userName.Substring(0, 1).ToUpper();
+}
+
+@section Styles {
+    <style>
+        .profile {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .p-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .profile-main {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Profile card */
+        .user-profile {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .user-avatar {
+            display: grid;
+            place-items: center;
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--accent-ink);
+            font-family: var(--font-head);
+            font-size: 40px;
+            font-weight: 700;
+        }
+
+        .user-name {
+            margin: 0;
+            font-size: 20px;
+            overflow-wrap: anywhere;
+        }
+
+        .user-email {
+            margin: 4px 0 0;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--muted);
+            overflow-wrap: anywhere;
+        }
+
+        .about {
+            padding-top: 20px;
+        }
+
+            .about h5 {
+                margin: 0 0 8px;
+                font-size: 16px;
+            }
+
+            .about p {
+                margin: 0;
+                color: var(--muted);
+                font-size: 14px;
+                line-height: 1.6;
+            }
+
+        /* Section headings inside the forms */
+        .p-title {
+            margin: 0 0 18px;
+            font-size: 18px;
+        }
+
+            .p-title.spaced {
+                margin-top: 28px;
+                padding-top: 24px;
+                border-top: 1px solid var(--line);
+            }
+
+        /* Fields */
+        .fields {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+            .fields .full {
+                grid-column: 1 / -1;
+            }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+            .form-group label {
+                font-size: 14px;
+                font-weight: 500;
+            }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            height: 44px;
+            padding: 0 14px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font: inherit;
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+            .form-control::placeholder {
+                color: var(--muted);
+                opacity: .8;
+            }
+
+            .form-control:focus {
+                outline: none;
+                border-color: var(--accent);
+                box-shadow: 0 0 0 3px rgba(232, 182, 76, .25);
+            }
+
+            .form-control:disabled {
+                opacity: .55;
+                cursor: not-allowed;
+            }
+
+            .form-control:-webkit-autofill {
+                -webkit-text-fill-color: var(--text);
+                box-shadow: 0 0 0 1000px var(--bg) inset;
+            }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        @@media (max-width: 900px) {
+            .profile {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @@media (max-width: 560px) {
+            .fields {
+                grid-template-columns: 1fr;
+            }
+
+            .p-card {
+                padding: 18px;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+                .form-actions .btn {
+                    width: 100%;
+                }
+        }
+    </style>
+}
+
+<div class="profile">
+
+    <!-- Profile card -->
+    <aside class="p-card">
+        <div class="user-profile">
+            <div class="user-avatar" aria-hidden="true">@initial</div>
+            <h5 class="user-name">@userName</h5>
+            <h6 class="user-email">@email</h6>
+        </div>
+        <div class="about">
+            <h5>About</h5>
+            <p>Keep your details up to date so your bookings and emails always reach you.</p>
+        </div>
+    </aside>
+
+    <div class="profile-main">
+
+        <!-- Personal details + address -->
+        <form class="p-card" asp-action="UpdateProfile">
+            <h6 class="p-title">Personal Details</h6>
+
+            <div class="fields">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input value="@Model.FullName" class="form-control" id="fullName" name="FullName" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label for="eMail">Email</label>
+                    <input class="form-control" id="eMail" name="Email" value="@Model.Email" readonly placeholder="Enter email ID">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input value="@Model.PhoneNumber" class="form-control" id="phone" name="PhoneNumber"  type="tel" placeholder="Enter Phone Number">
+                </div>
+            </div>
+
+            <h6 class="p-title spaced">Address</h6>
+
+            <div class="fields">
+                <div class="form-group full">
+                    <label for="address">Address</label>
+                    <input value="@Model.Address" class="form-control" id="address" name="Address" placeholder="Enter Address">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="reset" class="btn">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+
+        <!-- Password -->
+        <form class="p-card" asp-action="UpdatePassword">
+            <h6 class="p-title">Update Password</h6>
+
+            <div class="fields">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input class="form-control" id="currentPassword" name="CurrentPassword" type="password" autocomplete="current-password" placeholder="Enter Current Password">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input class="form-control" id="newPassword" name="NewPassword" type="password" autocomplete="new-password" placeholder="Enter New Password">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Password</button>
+            </div>
+        </form>
+
+    </div>
+</div>
